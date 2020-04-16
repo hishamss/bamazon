@@ -18,8 +18,28 @@ function displayall() {
   connection.query("select * from products", function (err, res) {
     if (err) throw err;
     console.table(res);
-    buyitem();
+    proceed();
   });
+}
+
+function proceed() {
+  inquirer
+    .prompt([
+      {
+        type: "confirm",
+        name: "proceed",
+        message: "Would you like to buy ?",
+      },
+    ])
+    .then(function (result) {
+      if (result.proceed) {
+        buyitem();
+      } else {
+        console.log("Thank you for shopping with us");
+        connection.end();
+        process.exit();
+      }
+    });
 }
 
 function buyitem() {
@@ -27,7 +47,7 @@ function buyitem() {
     .prompt([
       {
         name: "item",
-        message: "please type the item id you would like to buy",
+        message: "please type the item id you would like to buy ?",
         validate: function (value) {
           // accept only integer numbers
           if (Number.isInteger(Number(value))) {
@@ -51,7 +71,7 @@ function buyitem() {
     .then(function (result) {
       console.log(result.item, result.quantity);
       connection.query(
-        "select stock_quantity from products where item_id = ?",
+        "select stock_quantity, price from products where item_id = ?",
         result.item,
         function (err, res) {
           if (result.quantity > res[0].stock_quantity) {
@@ -62,12 +82,15 @@ function buyitem() {
             );
           } else {
             var NewQuan = res[0].stock_quantity - result.quantity;
+            var total = result.quantity * res[0].price;
             connection.query(
               "update products set stock_quantity = ? where item_id = ?",
               [NewQuan, result.item],
               function (err, res) {
                 if (err) throw err;
                 console.log("order has been placed sucsessfully");
+                console.log("The total is : $" + total);
+                displayall();
               }
             );
           }
