@@ -50,5 +50,28 @@ function buyitem() {
     ])
     .then(function (result) {
       console.log(result.item, result.quantity);
+      connection.query(
+        "select stock_quantity from products where item_id = ?",
+        result.item,
+        function (err, res) {
+          if (result.quantity > res[0].stock_quantity) {
+            console.log(
+              "Insufficient quantity! Only " +
+                res[0].stock_quantity +
+                " avaialble"
+            );
+          } else {
+            var NewQuan = res[0].stock_quantity - result.quantity;
+            connection.query(
+              "update products set stock_quantity = ? where item_id = ?",
+              [NewQuan, result.item],
+              function (err, res) {
+                if (err) throw err;
+                console.log("order has been placed sucsessfully");
+              }
+            );
+          }
+        }
+      );
     });
 }
