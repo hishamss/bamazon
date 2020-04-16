@@ -80,6 +80,7 @@ function buyitem() {
                 res[0].stock_quantity +
                 " avaialble"
             );
+            displayall();
           } else {
             var NewQuan = res[0].stock_quantity - result.quantity;
             var total = result.quantity * res[0].price;
