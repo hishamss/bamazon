@@ -28,7 +28,7 @@ function proceed() {
       {
         type: "confirm",
         name: "proceed",
-        message: "Would you like to proceed ?",
+        message: "Would you like to continue shopping ?",
       },
     ])
     .then(function (result) {

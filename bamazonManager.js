@@ -119,6 +119,17 @@ function addtoinventory() {
 }
 
 function addnewproduct() {
+  console.log(
+    "/////////////////Available Departments//////////////////////////"
+  );
+  connection.query("select * from departments", function (err, res) {
+    if (err) throw err;
+    console.table(res);
+    startAddingproduct();
+  });
+}
+
+function startAddingproduct() {
   inquirer
     .prompt([
       {

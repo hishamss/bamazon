@@ -23,6 +23,7 @@ function promptsupervisor() {
         choices: [
           "View Product Sales by Department",
           "Create New Department",
+          "View All Departments",
           "Exit",
         ],
       },
@@ -61,6 +62,12 @@ function promptsupervisor() {
             );
           });
         ////////////////
+      } else if (result.options === "View All Departments") {
+        connection.query("select * from departments", function (err, res) {
+          if (err) throw err;
+          console.table(res);
+          promptsupervisor();
+        });
       } else {
         connection.end();
         process.exit();
