@@ -28,14 +28,14 @@ function proceed() {
       {
         type: "confirm",
         name: "proceed",
-        message: "Would you like to buy ?",
+        message: "Would you like to proceed ?",
       },
     ])
     .then(function (result) {
       if (result.proceed) {
         buyitem();
       } else {
-        console.log("Thank you for shopping with us");
+        console.log("Thank you for using Bamazon");
         connection.end();
         process.exit();
       }
@@ -69,12 +69,14 @@ function buyitem() {
       },
     ])
     .then(function (result) {
-      console.log(result.item, result.quantity);
       connection.query(
         "select stock_quantity, price, product_sales from products where item_id = ?",
         result.item,
         function (err, res) {
-          if (result.quantity > res[0].stock_quantity) {
+          if (
+            result.quantity > res[0].stock_quantity &&
+            res[0].stock_quantity !== 0
+          ) {
             console.log("/////////////////////////");
             console.log(
               "Insufficient quantity! Only " +
@@ -82,23 +84,60 @@ function buyitem() {
                 " avaialble"
             );
             console.log("/////////////////////////");
+            inquirer
+              .prompt([
+                {
+                  type: "confirm",
+                  name: "insufficient",
+                  message:
+                    "Would you like to proceed buying the available qunatity ?",
+                },
+              ])
+              .then(function (userinput) {
+                if (userinput.insufficient) {
+                  placeorder(
+                    result.item,
+                    res[0].stock_quantity,
+                    res[0].stock_quantity,
+                    res[0].price,
+                    res[0].product_sales
+                  );
+                } else {
+                  proceed();
+                }
+              });
+          } else if (res[0].stock_quantity == 0) {
+            console.log("Sorry! out of stock");
             proceed();
           } else {
-            var NewQuan = res[0].stock_quantity - result.quantity;
-            var total = result.quantity * res[0].price;
-            var total_sales = Number(res[0].product_sales) + Number(total);
-            connection.query(
-              "update products set stock_quantity = ?, product_sales = ? where item_id = ?",
-              [NewQuan, total_sales, result.item],
-              function (err, res) {
-                if (err) throw err;
-                console.log("order has been placed sucsessfully");
-                console.log("The total is : $" + total);
-                displayall();
-              }
+            placeorder(
+              result.item,
+              res[0].stock_quantity,
+              result.quantity,
+              res[0].price,
+              res[0].product_sales
             );
           }
         }
       );
     });
+}
+
+function placeorder(ItemId, CurrentQuan, OrderedQuan, UnitPrice, CurrentSale) {
+  var NewQuan = CurrentQuan - OrderedQuan;
+
+  var total = OrderedQuan * UnitPrice;
+  var total_sales = Number(CurrentSale) + Number(total);
+  console.log("newquan: ", NewQuan, total_sales, ItemId);
+  connection.query(
+    "update products set stock_quantity = ?, product_sales = ? where item_id = ?",
+    [NewQuan, total_sales, ItemId],
+    function (err, res) {
+      if (err) throw err;
+      console.log(res);
+      console.log("order has been placed sucsessfully");
+      console.log("The total is : $" + total);
+      displayall();
+    }
+  );
 }
