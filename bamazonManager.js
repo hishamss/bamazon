@@ -43,6 +43,9 @@ function promptmanager() {
         case "Add New Product":
           addnewproduct();
           break;
+        case "Exit":
+          quit();
+          break;
       }
 
       //   connection.end();
@@ -165,4 +168,9 @@ function addnewproduct() {
         }
       );
     });
+}
+
+function quit() {
+  connection.end();
+  process.exit();
 }

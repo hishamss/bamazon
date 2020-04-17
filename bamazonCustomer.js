@@ -75,12 +75,14 @@ function buyitem() {
         result.item,
         function (err, res) {
           if (result.quantity > res[0].stock_quantity) {
+            console.log("/////////////////////////");
             console.log(
               "Insufficient quantity! Only " +
                 res[0].stock_quantity +
                 " avaialble"
             );
-            displayall();
+            console.log("/////////////////////////");
+            proceed();
           } else {
             var NewQuan = res[0].stock_quantity - result.quantity;
             var total = result.quantity * res[0].price;
