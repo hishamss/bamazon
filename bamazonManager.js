@@ -43,9 +43,8 @@ function promptmanager() {
         case "Add New Product":
           addnewproduct();
           break;
-        case "Exit":
+        default:
           quit();
-          break;
       }
 
       //   connection.end();
