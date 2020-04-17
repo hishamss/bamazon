@@ -71,7 +71,7 @@ function buyitem() {
     .then(function (result) {
       console.log(result.item, result.quantity);
       connection.query(
-        "select stock_quantity, price from products where item_id = ?",
+        "select stock_quantity, price, product_sales from products where item_id = ?",
         result.item,
         function (err, res) {
           if (result.quantity > res[0].stock_quantity) {
@@ -86,9 +86,10 @@ function buyitem() {
           } else {
             var NewQuan = res[0].stock_quantity - result.quantity;
             var total = result.quantity * res[0].price;
+            var total_sales = Number(res[0].product_sales) + Number(total);
             connection.query(
-              "update products set stock_quantity = ? where item_id = ?",
-              [NewQuan, result.item],
+              "update products set stock_quantity = ?, product_sales = ? where item_id = ?",
+              [NewQuan, total_sales, result.item],
               function (err, res) {
                 if (err) throw err;
                 console.log("order has been placed sucsessfully");
