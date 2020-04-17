@@ -37,9 +37,12 @@ function promptmanager() {
         case "View Low Inventory":
           lowenventory();
           break;
+        case "Add to Inventory":
+          addtoinventory();
+          break;
       }
 
-      connection.end();
+      //   connection.end();
     });
 }
 
@@ -60,4 +63,52 @@ function lowenventory() {
     console.table(res);
     promptmanager();
   });
+}
+
+function addtoinventory() {
+  inquirer
+    .prompt([
+      {
+        name: "item",
+        message: "For which item id you would like to add more quantity ?",
+        validate: function (value) {
+          // accept only integer numbers
+          if (Number.isInteger(Number(value))) {
+            return true;
+          }
+          return false;
+        },
+      },
+      {
+        name: "quantity",
+        message: "Please Enter the quantity?",
+        validate: function (value) {
+          // accept only integer numbers
+          if (Number.isInteger(Number(value))) {
+            return true;
+          }
+          return false;
+        },
+      },
+    ])
+    .then(function (result) {
+      connection.query(
+        "select stock_quantity from products where item_id = ?",
+        result.item,
+        function (err, res) {
+          if (err) throw err;
+          var NewQuan = Number(res[0].stock_quantity) + Number(result.quantity);
+          connection.query(
+            "update products set stock_quantity = ? where item_id = ?",
+            [NewQuan, result.item],
+            function (err, res) {
+              if (err) throw err;
+              console.log("new qunatity has been added successfully");
+              promptmanager();
+            }
+          );
+        }
+      );
+      ///////////////////
+    });
 }
