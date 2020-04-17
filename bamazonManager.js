@@ -40,6 +40,9 @@ function promptmanager() {
         case "Add to Inventory":
           addtoinventory();
           break;
+        case "Add New Product":
+          addnewproduct();
+          break;
       }
 
       //   connection.end();
@@ -110,5 +113,56 @@ function addtoinventory() {
         }
       );
       ///////////////////
+    });
+}
+
+function addnewproduct() {
+  inquirer
+    .prompt([
+      {
+        name: "product_name",
+        message: "Product Name: ",
+      },
+      {
+        name: "department_name",
+        message: "Department Name: ",
+      },
+      {
+        name: "price",
+        message: "Price in dollars: ",
+        validate: function (value) {
+          //accept number only
+          if (isNaN(value)) {
+            return false;
+          }
+          return true;
+        },
+      },
+      {
+        name: "stock_quantity",
+        message: "Quantity: ",
+        validate: function (value) {
+          if (Number.isInteger(Number(value))) {
+            return true;
+          }
+          return false;
+        },
+      },
+    ])
+    .then(function (result) {
+      connection.query(
+        "insert into products set ?",
+        {
+          product_name: result.product_name,
+          department_name: result.department_name,
+          price: result.price,
+          stock_quantity: result.stock_quantity,
+        },
+        function (err, res) {
+          if (err) throw err;
+          console.log("Added successfully");
+          promptmanager();
+        }
+      );
     });
 }
