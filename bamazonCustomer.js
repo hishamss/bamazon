@@ -128,13 +128,11 @@ function placeorder(ItemId, CurrentQuan, OrderedQuan, UnitPrice, CurrentSale) {
 
   var total = OrderedQuan * UnitPrice;
   var total_sales = Number(CurrentSale) + Number(total);
-  console.log("newquan: ", NewQuan, total_sales, ItemId);
   connection.query(
     "update products set stock_quantity = ?, product_sales = ? where item_id = ?",
     [NewQuan, total_sales, ItemId],
     function (err, res) {
       if (err) throw err;
-      console.log(res);
       console.log("order has been placed sucsessfully");
       console.log("The total is : $" + total);
       displayall();
