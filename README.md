@@ -1,6 +1,6 @@
 # Bamazon(Amazon-Like)
 
-Bamazon is Amazon-like store with MySQL database. it takes orders from customer and updates the store inventory. The store manager also able to manager his store and the supervisor can view and manage the departmens through the manager and supervisor apps.
+Bamazon is Amazon-like store with MySQL database. it takes orders from customer and updates the store inventory. The store manager also able to manage his store and the supervisor can view and manage the departmens through the manager and supervisor apps.
 
 - BamazonCustomer: through this app the customer is able to view the items on sale then he can place an order.
 
